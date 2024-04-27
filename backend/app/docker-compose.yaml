@@ -1,0 +1,13 @@
+services:
+  app-backend:
+    build: .
+    container_name: ani-app-backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    command: "npm run dev"
+    volumes:
+      - ./src:/app/src
+      - ./prisma:/app/prisma
+      - .env:/app/.env

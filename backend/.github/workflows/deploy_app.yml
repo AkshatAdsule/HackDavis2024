@@ -1,0 +1,71 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy container app to Azure Web App - awhc-ani-backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'app/**'
+      - '.github/workflows/deploy_app.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: 'ubuntu-latest'
+    defaults:
+      run:
+        working-directory: ./app
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Log in to registry
+      uses: docker/login-action@v2
+      with:
+        registry: https://awhcaniapp.azurecr.io/
+        username: ${{ secrets.AzureAppService_ContainerUsername_fc3d68371f2a434f8f0a9b90d817308e }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_f741d0f56d2e43569e47fc19ceab06f7 }}
+
+    - name: Build and push container image to registry
+      uses: docker/build-push-action@v3
+      with:
+        context: app
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        push: true
+        tags: awhcaniapp.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_fc3d68371f2a434f8f0a9b90d817308e }}/appbackend:${{ github.sha }}
+        file: ./app/Dockerfile
+        build-args: |
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          AZ_STORAGE_ACCOUNT_URL=${{ secrets.AZ_STORAGE_ACCOUNT_URL }}
+          FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_PRIVATE_KEY=${{ secrets.FIREBASE_PRIVATE_KEY }}
+          FIREBASE_DATABASE_URL=${{ secrets.FIREBASE_DATABASE_URL }}
+          FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    defaults:
+      run:
+        working-directory: ./app
+
+    steps:
+    - name: Deploy to Azure Web App
+      id: deploy-to-webapp
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'awhc-ani-backend'
+        slot-name: 'production'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_56334ad4f3ff4995954fa6c60fef53d3 }}
+        images: 'awhcaniapp.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_fc3d68371f2a434f8f0a9b90d817308e }}/appbackend:${{ github.sha }}'
