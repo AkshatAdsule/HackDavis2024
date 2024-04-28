@@ -39,4 +39,14 @@ model Item {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  freedge   Freedge? @relation(fields: [freedgeId], references: [id])
+  freedgeId Int?
+}
+
+model Freedge {
+  id        Int      @id @default(autoincrement())
+  image     String
+  updatedAt DateTime @updatedAt
+
+  items Item[]
 }

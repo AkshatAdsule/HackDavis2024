@@ -21,7 +21,7 @@ export class ItemsService {
     });
   }
 
-  async createItem(data: { name: string; ownerId: string }) {
+  async createItem(data: { name: string; ownerId: string; freedgeId: number }) {
     return this.prismaSerice.item.create({
       data,
     });

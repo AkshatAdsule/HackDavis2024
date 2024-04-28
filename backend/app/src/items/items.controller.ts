@@ -29,7 +29,9 @@ export class ItemsController {
   }
 
   @Post()
-  async createItem(@Body() data: { name: string; ownerId: string }) {
+  async createItem(
+    @Body() data: { name: string; ownerId: string; freedgeId: number },
+  ) {
     return this.itemsService.createItem(data);
   }
 }
