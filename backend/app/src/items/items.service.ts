@@ -7,28 +7,30 @@ export class ItemsService {
   public static readonly PAGE_SIZE: number = 15;
 
   constructor(
-    private prismaSerice: PrismaService,
+    private prismaService: PrismaService,
     private storageService: StorageService,
   ) {}
 
   async getItems() {
-    return this.prismaSerice.item.findMany({});
+    return this.prismaService.item.findMany({
+      include: { owner: true },
+    });
   }
 
   async getItemById(id: number) {
-    return this.prismaSerice.item.findUnique({
+    return this.prismaService.item.findUnique({
       where: { id },
     });
   }
 
   async createItem(data: { name: string; ownerId: string }) {
-    return this.prismaSerice.item.create({
+    return this.prismaService.item.create({
       data,
     });
   }
 
   async getItemsByUserId(userId: string) {
-    return this.prismaSerice.item.findMany({
+    return this.prismaService.item.findMany({
       where: { ownerId: userId },
     });
   }
