@@ -5,7 +5,7 @@ import time
 import requests
 
 
-cap  = cv2.VideoCapture(4)
+cap  = cv2.VideoCapture(0)
 
 # list of all the cameras connected to the computer
 # for i in range(0, 10):

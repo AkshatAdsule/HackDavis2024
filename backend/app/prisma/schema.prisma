@@ -11,30 +11,28 @@ datasource db {
 }
 
 model User {
-  id    String  @id @default(cuid())
-  email String  @unique
-  name  String?
+  uid          String  @id @default(cuid())
+  email        String  @unique
+  name         String?
+  profilePhoto String  @default("https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg")
 
   items Item[]
 
-  showOnLeaderboard Boolean @default(true)
+  points    Float @default(0)
+  donations Int   @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Item {
-  id          Int       @id @default(autoincrement())
-  name        String
-  upc         String?
-  expiry      DateTime?
-  description String?
+  id       Int    @id @default(autoincrement())
+  name     String
+  score    Int    @default(0)
+  image    String @default("NO_IMAGE_PROVIDED")
+  quantity Int    @default(1)
 
-  photos String[] @default([])
-
-  isUserPublic Boolean @default(false)
-
-  owner   User   @relation(fields: [ownerId], references: [id])
+  owner   User   @relation(fields: [ownerId], references: [uid])
   ownerId String
 
   createdAt DateTime @default(now())

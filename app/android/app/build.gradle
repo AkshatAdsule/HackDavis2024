@@ -1,5 +1,8 @@
 plugins {
     id "com.android.application"
+    // START: FlutterFire Configuration
+    id 'com.google.gms.google-services'
+    // END: FlutterFire Configuration
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
@@ -66,4 +69,5 @@ flutter {
 
 dependencies {
     implementation 'com.google.mlkit:barcode-scanning:17.2.0'
+    implementation platform('com.google.firebase:firebase-bom:32.8.1')
 }

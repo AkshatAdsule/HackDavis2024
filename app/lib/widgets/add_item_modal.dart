@@ -24,15 +24,15 @@ class _AddItemModalState extends State<AddItemModal> {
       _isSearching = true;
       _status = "Looking up item...";
     });
-    // _item = await FoodApi().getResponse(upc);
+    _item = await FoodApi().getResponse(upc);
 
-    _item = FoodData(
-      name: "Enlighten Mint Yerba Mate, Enlighten Mint",
-      image:
-          "https://www.edamam.com/food-img/621/6210025518f6a76f8c2015f33fc4e3a3.jpg",
-      score: 10,
-      quantity: 1,
-    );
+    // _item = FoodData(
+    //   name: "Enlighten Mint Yerba Mate, Enlighten Mint",
+    //   image:
+    //       "https://www.edamam.com/food-img/621/6210025518f6a76f8c2015f33fc4e3a3.jpg",
+    //   score: 10,
+    //   quantity: 1,
+    // );
 
     if (_item == null) {
       setState(() {

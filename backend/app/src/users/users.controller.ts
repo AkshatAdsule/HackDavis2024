@@ -32,7 +32,15 @@ export class UsersController {
 
   @Post()
   @ApiCreatedResponse()
-  async createUser(@Body() data: { email: string; name: string }) {
+  async createUser(
+    @Body()
+    data: {
+      uid: string;
+      email: string;
+      name: string;
+      profilePhoto: string;
+    },
+  ) {
     return this.usersService.createUser(data);
   }
 
@@ -40,8 +48,14 @@ export class UsersController {
   @ApiOkResponse()
   async updateUser(
     @Param('id') id: string,
-    @Body() data: { email: string; name: string },
+    @Body()
+    data: { uid: string; email: string; name: string; profilePhoto: string },
   ) {
     return this.usersService.updateUser(id, data);
+  }
+
+  @Get('leaderboard')
+  async getLeaderboard() {
+    return this.usersService.getLeaderboard();
   }
 }

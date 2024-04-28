@@ -10,27 +10,29 @@ export class UsersService {
   ) {}
 
   async getUsers() {
-    return this.prismaService.user.findMany();
+    return this.prismaService.user.findMany({ orderBy: { points: 'desc' } });
   }
 
   async getUserById(id: string) {
     return this.prismaService.user.findUnique({
-      where: { id },
+      where: { uid: id },
     });
   }
 
-  async createUser(data: { email: string; name: string }) {
+  async createUser(data: {
+    uid: string;
+    email: string;
+    name: string;
+    profilePhoto: string;
+  }) {
     return this.prismaService.user.create({
-      data: {
-        email: data.email,
-        name: data.name,
-      },
+      data,
     });
   }
 
   async updateUser(id: string, data: { email: string; name: string }) {
     return this.prismaService.user.update({
-      where: { id },
+      where: { uid: id },
       data: {
         email: data.email,
         name: data.name,
@@ -40,11 +42,15 @@ export class UsersService {
 
   async deleteUser(id: string) {
     return this.prismaService.user.delete({
-      where: { id },
+      where: { uid: id },
     });
   }
 
   async getItemsByUserId(userId: string) {
     return this.itemsService.getItemsByUserId(userId);
+  }
+
+  async getLeaderboard() {
+    return this.prismaService.user.findMany();
   }
 }

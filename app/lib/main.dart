@@ -1,10 +1,17 @@
+import 'package:app/firebase_options.dart';
 import 'package:app/screens/home.dart';
 import 'package:app/screens/leaderboard.dart';
 import 'package:app/screens/profile.dart';
+import 'package:app/services/user_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_mobile_vision/qr_camera.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  UserService.instance;
   runApp(const MyApp());
 }
 
@@ -18,7 +25,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            brightness: Brightness.dark, seedColor: Colors.greenAccent),
+            brightness: Brightness.light, seedColor: Colors.greenAccent),
         useMaterial3: true,
       ),
       home: const MyHomePage(),
@@ -34,7 +41,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Widget> _screens = [HomeScreen(), LeaderBoardScreen(), ProfileScreen()];
+  List<Widget> _screens = [
+    HomeScreen(),
+    LeaderBoardScreen(),
+    ProfileSettingsPage()
+  ];
   int _currentIndex = 0;
 
   @override
@@ -48,14 +59,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text("Hel"),
+          title: Text("Freedge Filler"),
         ),
         body: _screens[_currentIndex],
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          tooltip: 'Increment',
-          child: const Icon(Icons.add),
-        ),
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(

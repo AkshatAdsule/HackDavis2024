@@ -31,13 +31,13 @@ class FoodApi {
       );
       if (response.statusCode == 200) {
         // Handle successful response here
-        Map<String, dynamic> dt = json.decode(response.body);
+        dt = json.decode(response.body);
         print('Response body: ${response.body}');
 
         FoodData foodData = FoodData(
-          name: dt['hints'][0]['food']["label"],
-          image: dt['hints'][0]['food']["image"],
-          score: 0,
+          name: dt!['hints'][0]['food']["label"],
+          image: dt!['hints'][0]['food']["image"],
+          score: calculateScore(),
           quantity: 1,
         );
 
@@ -54,17 +54,60 @@ class FoodApi {
     }
   }
 
-  // bool isFood() {
-  //   if (dt != null) {
-  //     Map<String, dynamic> data = dt!;
-  //     if (data.containsKey('product')) {
-  //       Map<String, dynamic> product = data['product'];
-  //       if (product.containsKey('category')) {
-  //         String? product = product['category'];
-  //         if ()
-  //       }
-  //     }
-  //   }
-  //   return false;
-  // }
+  double calculateScore() {
+    if (dt == null) {
+      return -8;
+    }
+    Map<String, dynamic> dataB = dt!;
+
+    double calories = dataB['hints']?[0]?['food']?["nutrients"]?["CA"] ?? 100;
+    double protein = dataB['hints']?[0]?['food']?["nutrients"]?["PROCNT"] ?? 10;
+    double fat = dataB['hints']?[0]?['food']?["nutrients"]?["FAT"] ?? 5;
+    double sugar = dataB['hints']?[0]?['food']?["nutrients"]?["SUGAR"] ?? 10;
+    // Calculate dataB calories
+    double totalCalories = calories;
+
+    // Calculate percentage of calories from fat, sugar, and protein
+    double fatPercentage = (fat / totalCalories) * 100;
+    double sugarPercentage = (sugar / totalCalories) * 100;
+    double proteinPercentage = (protein * 20 / totalCalories) *
+        100; // Protein contributes 4 calories per gram
+
+    // Score for fat (scaling exponentially)
+    double fatScore = 0;
+    if (fatPercentage <= 20) {
+      fatScore = 10 - (20 - fatPercentage) / 2;
+    } else {
+      fatScore = 5 - (fatPercentage) / 5;
+    }
+    fatScore = (fatScore).clamp(-2, 4); // Ensure score is within range [2, 10]
+
+    // Score for sugar (scaling exponentially)
+    double sugarScore = 0;
+    if (sugarPercentage <= 10) {
+      sugarScore = (10 - (10 - sugarPercentage) / 2).clamp(3, 10);
+    } else {
+      sugarScore = 3 - (sugarPercentage) / 6;
+    }
+    sugarScore =
+        (sugarScore).clamp(-4, 5); // Ensure score is within range [2, 10]
+
+    // Score for protein (scaled based on percentage of calories)
+    double proteinScore =
+        (proteinPercentage / 10).clamp(0, 15); // Scale protein to 0-10 range
+    proteinScore = proteinScore.clamp(0, 10);
+
+    // Combine scores with a larger portion for calories/protein
+    double totalScore =
+        ((calories / 100) + proteinScore / 4 + (fatScore + sugarScore) / 2);
+
+    // Ensure score is within the range [2, 10]
+    if (totalScore < 2) {
+      totalScore = 2;
+    } else if (totalScore > 14) {
+      totalScore = 14;
+    }
+
+    return totalScore;
+  }
 }
